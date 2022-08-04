@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager>
 {
+    public bool haveKey;
+    
     private void Awake()
     {
         GameStateManager.Instance.GameStateMainMenu.OnExecute += StartGame;
@@ -19,5 +21,11 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             AkaliLevelManager.Instance.LevelIsPlaying();
         }
+    }
+
+    public IEnumerator CompleteGame()
+    {
+        yield return new WaitForSeconds(2);
+        AkaliLevelManager.Instance.LevelIsCompleted();
     }
 }

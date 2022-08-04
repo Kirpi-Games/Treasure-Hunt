@@ -5,6 +5,8 @@ using Akali.Common;
 using Akali.Scripts.Managers;
 using Akali.Scripts.Managers.StateMachine;
 using Akali.Scripts.Utilities;
+using Akali.Ui_Materials.Scripts.Components;
+using DG.Tweening;
 using UnityEngine;
 
 public class PlayerMovement : Singleton<PlayerMovement>
@@ -23,9 +25,10 @@ public class PlayerMovement : Singleton<PlayerMovement>
     private bool moveRight = true;
     private bool moveBack = true;
     RaycastHit hit;
-
+    public float moveSpeed;
     private Vector3 FirstPos;
-    private Vector3 LastPos;  
+    private Vector3 LastPos;
+    public GameObject playerMesh;
 
     private float Distance;  //Minimum distance for a Swipe.
         
@@ -42,6 +45,17 @@ public class PlayerMovement : Singleton<PlayerMovement>
         Distance = Screen.height * 15 / 100; //DragDistance.
 
     }
+
+    private void MovePlayer()
+    {
+        RayControl(Vector3.forward);
+        RayControl(Vector3.left);
+        RayControl(Vector3.right);
+        RayControl(Vector3.back);
+        if (transform.position == desiredPosition) { Movement = new Vector3(0.0f, 0.0f, 0.0f); movementOnGoing = true;}
+    }
+
+    #region SwipeControl
 
     void UpdateSwipe()
     {
@@ -97,15 +111,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
             }
         }
     }
-
-    private void MovePlayer()
-    {
-        RayControl(Vector3.forward);
-        RayControl(Vector3.left);
-        RayControl(Vector3.right);
-        RayControl(Vector3.back);
-    }
-
+    
     void SwipeLeft()
     {
         if (movementOnGoing == true){
@@ -114,9 +120,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
             desiredPosition = transform.position + Movement;
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothPosition;
-        if (transform.position == desiredPosition) { Movement = new Vector3(0.0f, 0.0f, 0.0f); movementOnGoing = true;}
-        Debug.Log("Left Swipe");
+        transform.DOMove(smoothPosition,moveSpeed);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-90,0), 0.2f);
     }
 
     void SwipeRight()
@@ -127,10 +132,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
             desiredPosition = transform.position + Movement;
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothPosition;
-        if (transform.position == desiredPosition) { Movement = new Vector3(0.0f, 0.0f, 0.0f); movementOnGoing = true;}
-        
-        Debug.Log("Left Swipe");
+        transform.DOMove(smoothPosition,moveSpeed);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,90,0), 0.2f);
     }
 
     void SwipeUp()
@@ -141,9 +144,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
             desiredPosition = transform.position + Movement;
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothPosition;
-        if (transform.position == desiredPosition) { Movement = new Vector3(0.0f, 0.0f, 0.0f); movementOnGoing = true;}
-        Debug.Log("Left Swipe");
+        transform.DOMove(smoothPosition,moveSpeed);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,0,0), 0.2f);
     }
 
     void SwipeDown()
@@ -154,11 +156,14 @@ public class PlayerMovement : Singleton<PlayerMovement>
             desiredPosition = transform.position + Movement;
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-        transform.position = smoothPosition;
-        if (transform.position == desiredPosition) { Movement = new Vector3(0.0f, 0.0f, 0.0f); movementOnGoing = true;}
-        Debug.Log("Left Swipe");
+        transform.DOMove(smoothPosition,moveSpeed);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
     }
 
+
+    #endregion
+    
+    
 
     private void RayControl(Vector3 direction)
     {
@@ -186,6 +191,20 @@ public class PlayerMovement : Singleton<PlayerMovement>
                     moveLeft = false;
                 }
             }
+            if (hit.collider.gameObject.layer == Constants.Treasure)
+            {
+                TakeTreasure(hit);
+            }
+
+            if (hit.collider.gameObject.layer == Constants.Treasure)
+            {
+                if (PlayerManager.Instance.haveKey)
+                {
+                    StartCoroutine(PlayerManager.Instance.CompleteGame());
+                    CameraController.Instance.Final();
+                    MoneyText.Instance.IncreaseMoney(250);
+                }
+            }
         }
         else
         {
@@ -206,6 +225,23 @@ public class PlayerMovement : Singleton<PlayerMovement>
                 moveLeft = true;
             }
         }
+    }
+
+    public void TakeTreasure(RaycastHit hit)
+    {
+        CameraController.Instance.Treasure();
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
+        hit.collider.gameObject.transform.DOScale(0, 0.5f);
+        Invoke("InvokeMovement",2);
+        MoneyText.Instance.IncreaseMoney(100);
+    }
+
+    public void InvokeMovement()
+    {
+        GameStateManager.Instance.GameStatePlaying.OnExecute += MovePlayer;
+        GameStateManager.Instance.GameStatePlaying.OnExecute += UpdateSwipe;
     }
 }
 

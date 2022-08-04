@@ -4,10 +4,11 @@ namespace Akali.Scripts.Utilities
     {
         // Scene and Layers
         public const string SceneSample = "SampleScene";
-        public const byte LayerPlayer = 10;
-        public const byte LayerEnemy = 11;
         public const byte Barrier = 6;
-        
+        public const byte Treasure = 7;
+        public const byte Mines = 8;
+        public const byte Final = 9;
+
         // Player Preferences
         public const string BoolVarTrue = "true";
         public const string BoolVarFalse = "false";
@@ -15,5 +16,6 @@ namespace Akali.Scripts.Utilities
         public const string PrefsLevelText = "leveltext";
         public const string PrefsMoney = "money";
         public const string PrefsHaptic = "haptic";
+        
     }
 }
