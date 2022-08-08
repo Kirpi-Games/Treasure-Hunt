@@ -30,6 +30,7 @@ public class MineDetector : Singleton<MineDetector>
         if (other.gameObject.layer == Constants.Mines)
         {
             print("MineDetect");
+            Taptic.Medium();
         }
     }
 }

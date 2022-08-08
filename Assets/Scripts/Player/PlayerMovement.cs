@@ -193,10 +193,47 @@ public class PlayerMovement : Singleton<PlayerMovement>
             }
             if (hit.collider.gameObject.layer == Constants.Treasure)
             {
+                if (direction == Vector3.forward)
+                {
+                    moveForward = false;
+                }
+                if (direction == Vector3.back)
+                {
+                    moveBack = false;
+                }
+                if (direction == Vector3.right)
+                {
+                    moveRight = false;
+                }
+                if (direction == Vector3.left)
+                {
+                    moveLeft = false;
+                }
                 TakeTreasure(hit);
             }
+            
+            if (hit.collider.gameObject.layer == Constants.GoldTreasure)
+            {
+                if (direction == Vector3.forward)
+                {
+                    moveForward = false;
+                }
+                if (direction == Vector3.back)
+                {
+                    moveBack = false;
+                }
+                if (direction == Vector3.right)
+                {
+                    moveRight = false;
+                }
+                if (direction == Vector3.left)
+                {
+                    moveLeft = false;
+                }
+                TakeGoldTreasure(hit);
+            }
 
-            if (hit.collider.gameObject.layer == Constants.Treasure)
+            if (hit.collider.gameObject.layer == Constants.Final)
             {
                 if (PlayerManager.Instance.haveKey)
                 {
@@ -204,6 +241,27 @@ public class PlayerMovement : Singleton<PlayerMovement>
                     CameraController.Instance.Final();
                     MoneyText.Instance.IncreaseMoney(250);
                 }
+            }
+            
+            if (hit.collider.gameObject.layer == Constants.Key)
+            {
+                if (direction == Vector3.forward)
+                {
+                    moveForward = false;
+                }
+                if (direction == Vector3.back)
+                {
+                    moveBack = false;
+                }
+                if (direction == Vector3.right)
+                {
+                    moveRight = false;
+                }
+                if (direction == Vector3.left)
+                {
+                    moveLeft = false;
+                }
+                TakeKey(hit);
             }
         }
         else
@@ -233,8 +291,31 @@ public class PlayerMovement : Singleton<PlayerMovement>
         GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
         hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
-        hit.collider.gameObject.transform.DOScale(0, 0.5f);
-        Invoke("InvokeMovement",2);
+        hit.collider.GetComponent<Treasure>().OpenChest();
+        Invoke("InvokeMovement",2.2f);
+        MoneyText.Instance.IncreaseMoney(100);
+    }
+    
+    public void TakeKey(RaycastHit hit)
+    {
+        CameraController.Instance.Treasure();
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
+        PlayerManager.Instance.haveKey = true;
+        hit.collider.transform.DOScale(0,1);
+        Invoke("InvokeMovement",2.2f);
+        MoneyText.Instance.IncreaseMoney(100);
+    }
+    
+    public void TakeGoldTreasure(RaycastHit hit)
+    {
+        CameraController.Instance.Treasure();
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
+        hit.collider.transform.DOScale(0,1);
+        Invoke("InvokeMovement",2.2f);
         MoneyText.Instance.IncreaseMoney(100);
     }
 
