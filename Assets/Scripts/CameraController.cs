@@ -11,7 +11,7 @@ public class CameraController : Singleton<CameraController>
     public Vector3 offset;
     public Vector3 lookatOffset;
     private Vector3 treasureOffset = new Vector3(2, 2, -2);
-    private Vector3 finalOffset = new Vector3(2, 2, -2);
+    private Vector3 finalOffset = new Vector3(0.5f, 1, -2);
     private Vector3 normalOffset = new Vector3(0, 7, -7);
     public bool isFollow;
 
@@ -24,7 +24,7 @@ public class CameraController : Singleton<CameraController>
     public void Treasure()
     {
         DOTween.To(()=> offset, x=> offset = x, treasureOffset, 0.5f);
-        Invoke("NormalOffset",2f);
+        Invoke("NormalOffset",1f);
     }
 
     private void NormalOffset()

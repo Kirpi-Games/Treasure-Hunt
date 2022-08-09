@@ -1,5 +1,8 @@
+using System;
 using Akali.Common;
 using Akali.Scripts.Managers.StateMachine;
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 namespace Akali.Ui_Materials.Scripts
@@ -14,6 +17,11 @@ namespace Akali.Ui_Materials.Scripts
         public GameObject completeButton;
         public GameObject failUi;
         public GameObject failButton;
+        public GameObject inGame;
+        
+        
+        //Game
+        public TextMeshProUGUI notifText, keybar;
         
         private void Awake()
         {
@@ -38,6 +46,19 @@ namespace Akali.Ui_Materials.Scripts
             GameStateManager.Instance.GameStateFail.OnEnter -= SetActiveFailUi;
             GameStateManager.Instance.GameStateFail.OnExit -= SetActiveFailUi;
         }
+
+        public void Notif(String x, Color c)
+        {
+            notifText.text = x;
+            notifText.color = c;
+            notifText.gameObject.transform.DOScale(1, 0.7f);
+            Invoke("HideNotif",1.5f);
+        }
+
+        public void HideNotif()
+        {
+            notifText.gameObject.transform.DOScale(0, 0.4f);
+        }
         
         public void SetActiveMainMenuUi()
         {
@@ -48,6 +69,7 @@ namespace Akali.Ui_Materials.Scripts
         {
             playingLevel.SetActive(!playingLevel.activeSelf);
             playingCoinBar.SetActive(!playingCoinBar.activeSelf);
+            inGame.SetActive(!inGame.activeSelf);
         }
 
         private void SetActiveCompleteUi()

@@ -3,7 +3,12 @@ guid: 4471f5fb8ebe9b944aaf0dcc78106fc5
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cehic
+    second: {fileID: 2100000, guid: aad33fec2270b2d418b8ed109da32dc6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

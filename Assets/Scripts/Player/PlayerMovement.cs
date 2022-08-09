@@ -5,6 +5,7 @@ using Akali.Common;
 using Akali.Scripts.Managers;
 using Akali.Scripts.Managers.StateMachine;
 using Akali.Scripts.Utilities;
+using Akali.Ui_Materials.Scripts;
 using Akali.Ui_Materials.Scripts.Components;
 using DG.Tweening;
 using UnityEngine;
@@ -121,7 +122,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,-90,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,90,0), 0.2f);
     }
 
     void SwipeRight()
@@ -133,7 +134,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,90,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-90,0), 0.2f);
     }
 
     void SwipeUp()
@@ -145,7 +146,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,0,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
     }
 
     void SwipeDown()
@@ -157,7 +158,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,0,0), 0.2f);
     }
 
 
@@ -263,6 +264,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
                 }
                 TakeKey(hit);
             }
+
+            if (hit.collider.gameObject.layer == Constants.Door)
+            {
+                Final(hit);
+            }
         }
         else
         {
@@ -287,35 +293,55 @@ public class PlayerMovement : Singleton<PlayerMovement>
 
     public void TakeTreasure(RaycastHit hit)
     {
-        CameraController.Instance.Treasure();
         GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        playerMesh.transform.DOLookAt(new Vector3(0, hit.collider.gameObject.transform.position.y, 0), 0.2f);
+        CameraController.Instance.Treasure();
         hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
         hit.collider.GetComponent<Treasure>().OpenChest();
-        Invoke("InvokeMovement",2.2f);
+        Invoke("InvokeMovement",2f);
+        GameUiManager.Instance.Notif("Treasure Found",Color.green);
         MoneyText.Instance.IncreaseMoney(100);
+    }
+
+    public void Final(RaycastHit hit)
+    {
+        if (PlayerManager.Instance.haveKey)
+        {
+            playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
+            GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
+            GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+            CameraController.Instance.Final();
+            hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
+            hit.collider.transform.parent.GetChild(0).DOScale(3, 1f);
+            hit.collider.gameObject.transform.DOScale(0, 0.2f).OnComplete(() => transform.DOMoveZ(transform.position.z + 2,1));
+            //Animation
+            //Particle
+            StartCoroutine(PlayerManager.Instance.CompleteGame());
+        }
+        else
+        {
+            GameUiManager.Instance.Notif("Key Not Found",Color.red);
+        }
     }
     
     public void TakeKey(RaycastHit hit)
     {
-        CameraController.Instance.Treasure();
-        GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
-        GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
-        hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
+        GameUiManager.Instance.Notif("Key Found",Color.green);
+        GameUiManager.Instance.keybar.text = "1/1";
         PlayerManager.Instance.haveKey = true;
-        hit.collider.transform.DOScale(0,1);
-        Invoke("InvokeMovement",2.2f);
         MoneyText.Instance.IncreaseMoney(100);
     }
     
     public void TakeGoldTreasure(RaycastHit hit)
     {
-        CameraController.Instance.Treasure();
         GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        playerMesh.transform.DOLookAt(new Vector3(0, hit.collider.gameObject.transform.position.y, 0), 0.2f);
+        CameraController.Instance.Treasure();
         hit.collider.gameObject.GetComponent<BoxCollider>().enabled = false;
         hit.collider.transform.DOScale(0,1);
-        Invoke("InvokeMovement",2.2f);
+        Invoke("InvokeMovement",2f);
         MoneyText.Instance.IncreaseMoney(100);
     }
 

@@ -10,6 +10,7 @@ namespace Akali.Scripts.Utilities
         public const byte Final = 9;
         public const byte Key = 10;
         public const byte GoldTreasure = 11;
+        public const byte Door = 13;
 
         // Player Preferences
         public const string BoolVarTrue = "true";
