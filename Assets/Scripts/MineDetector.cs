@@ -22,7 +22,7 @@ public class MineDetector : Singleton<MineDetector>
 
     private void BrowseMine()
     {
-        DOTween.To(()=> collider.radius, x=> collider.radius = x, 7, 1f).SetLoops(-1,LoopType.Restart);
+        DOTween.To(()=> collider.radius, x=> collider.radius = x, 9, 0.7f).SetLoops(-1,LoopType.Restart);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -30,6 +30,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
     private Vector3 FirstPos;
     private Vector3 LastPos;
     public GameObject playerMesh;
+    public Animator animator;
 
     private float Distance;  //Minimum distance for a Swipe.
         
@@ -119,10 +120,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
             if (moveLeft) Movement = new Vector3(negativeMovementUnit, 0.0f, 0.0f);
             movementOnGoing = false;
             desiredPosition = transform.position + Movement;
+            animator.Play("Walk");
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,90,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-90,0), 0.2f);
     }
 
     void SwipeRight()
@@ -131,10 +133,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
             if (moveRight) Movement = new Vector3(movementUnit, 0.0f, 0.0f);
             movementOnGoing = false;
             desiredPosition = transform.position + Movement;
+            animator.Play("Walk");
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,-90,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,90,0), 0.2f);
     }
 
     void SwipeUp()
@@ -143,10 +146,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
             if (moveForward) Movement = new Vector3(0.0f, 0.0f, movementUnit);
             movementOnGoing = false;
             desiredPosition = transform.position + Movement;
+            animator.Play("Walk");
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,0,0), 0.2f);
     }
 
     void SwipeDown()
@@ -155,10 +159,11 @@ public class PlayerMovement : Singleton<PlayerMovement>
             if (moveBack) Movement = new Vector3(0.0f, 0.0f, negativeMovementUnit);
             movementOnGoing = false;
             desiredPosition = transform.position + Movement;
+            animator.Play("Walk");
         }
         smoothPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.DOMove(smoothPosition,moveSpeed);
-        playerMesh.transform.DOLocalRotate(new Vector3(0,0,0), 0.2f);
+        playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
     }
 
 
@@ -293,6 +298,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
 
     public void TakeTreasure(RaycastHit hit)
     {
+        animator.Play("Put");
         GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
         playerMesh.transform.DOLookAt(new Vector3(0, hit.collider.gameObject.transform.position.y, 0), 0.2f);
@@ -308,6 +314,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
     {
         if (PlayerManager.Instance.haveKey)
         {
+            animator.Play("Finish");
             playerMesh.transform.DOLocalRotate(new Vector3(0,-180,0), 0.2f);
             GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
             GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
@@ -327,6 +334,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
     
     public void TakeKey(RaycastHit hit)
     {
+        animator.Play("Put");
         GameUiManager.Instance.Notif("Key Found",Color.green);
         GameUiManager.Instance.keybar.text = "1/1";
         PlayerManager.Instance.haveKey = true;
@@ -335,6 +343,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
     
     public void TakeGoldTreasure(RaycastHit hit)
     {
+        animator.Play("Put");
         GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
         playerMesh.transform.DOLookAt(new Vector3(0, hit.collider.gameObject.transform.position.y, 0), 0.2f);
