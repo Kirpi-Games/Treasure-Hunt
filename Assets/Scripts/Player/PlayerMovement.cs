@@ -47,7 +47,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
     void Start()
     {
 
-        Distance = Screen.height * 15 / 100; //DragDistance.
+        Distance = Screen.height * 15 / 150; //DragDistance.
 
     }
 
