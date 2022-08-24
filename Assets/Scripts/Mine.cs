@@ -13,7 +13,7 @@ public class Mine : MonoBehaviour
         if (other.gameObject.layer == 3)
         {
             AkaliLevelManager.Instance.LevelIsFail();
-            //ragdoll
+            PlayerMovement.Instance.Fail();
             //particle
         }
 

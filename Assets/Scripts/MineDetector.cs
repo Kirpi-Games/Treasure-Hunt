@@ -9,6 +9,7 @@ using UnityEngine;
 public class MineDetector : Singleton<MineDetector>
 {
     private SphereCollider collider;
+    public Color color;
 
     private void Awake()
     {
@@ -31,13 +32,13 @@ public class MineDetector : Singleton<MineDetector>
         {
             print("MineDetect");
             Taptic.Medium();
-            other.GetComponent<Mine>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.red, 0.2f).OnComplete(() => other.GetComponent<Mine>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.white, 0.2f));
+            other.GetComponent<Mine>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.red, 0.2f).OnComplete(() => other.GetComponent<Mine>().ground.GetComponent<MeshRenderer>().material.DOColor(color, 0.2f));
         }
         
         if (other.gameObject.layer == Constants.Key)
         {
-            Taptic.Medium();
-            other.GetComponent<Key>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.green, 0.2f).OnComplete(() => other.GetComponent<Key>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.white, 0.2f));
+            //Taptic.Medium();
+            //other.GetComponent<Key>().ground.GetComponent<MeshRenderer>().material.DOColor(Color.green, 0.2f).OnComplete(() => other.GetComponent<Key>().ground.GetComponent<MeshRenderer>().material.DOColor(color, 0.2f));
         }
     }
 }

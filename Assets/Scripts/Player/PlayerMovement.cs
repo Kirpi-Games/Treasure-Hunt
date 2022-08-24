@@ -31,6 +31,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
     private Vector3 LastPos;
     public GameObject playerMesh;
     public Animator animator;
+    [SerializeField] private float forceStrenght;
+    public GameObject bomb;
 
     private float Distance;  //Minimum distance for a Swipe.
         
@@ -39,6 +41,7 @@ public class PlayerMovement : Singleton<PlayerMovement>
         GameStateManager.Instance.GameStatePlaying.OnExecute += MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute += UpdateSwipe;
         negativeMovementUnit = (-1 * movementUnit);
+        RagdollFail(false);
     }
     
     void Start()
@@ -270,6 +273,8 @@ public class PlayerMovement : Singleton<PlayerMovement>
                 TakeKey(hit);
             }
 
+            
+            
             if (hit.collider.gameObject.layer == Constants.Door)
             {
                 Final(hit);
@@ -358,6 +363,30 @@ public class PlayerMovement : Singleton<PlayerMovement>
     {
         GameStateManager.Instance.GameStatePlaying.OnExecute += MovePlayer;
         GameStateManager.Instance.GameStatePlaying.OnExecute += UpdateSwipe;
+    }
+
+    public void Fail()
+    {
+        RagdollFail(true);
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= MovePlayer;
+        GameStateManager.Instance.GameStatePlaying.OnExecute -= UpdateSwipe;
+        transform.GetChild(0).GetComponent<Rigidbody>().AddForce(Vector3.up * forceStrenght);
+        Instantiate(bomb, transform.position, transform.rotation);
+    }
+
+    public void RagdollFail(bool x)
+    {
+        transform.DOKill();
+        animator.enabled = !x;
+        transform.GetChild(0).GetComponent<CapsuleCollider>().enabled = !x;
+        foreach (var rb in GetComponentsInChildren<Rigidbody>())
+        { 
+            rb.isKinematic = !x;
+        }
+        foreach (var col in GetComponentsInChildren<Collider>())
+        {
+            col.isTrigger= !x;
+        }
     }
 }
 
